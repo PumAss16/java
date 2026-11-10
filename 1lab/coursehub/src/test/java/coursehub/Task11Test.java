@@ -9,29 +9,23 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Задание 11. assertThrows: проверяем тип, код и поля исключения, а также то,
- * что объект не изменился после неуспешной команды.
- * В lambda — ровно одно потенциально падающее действие, иначе непонятно,
- * что именно бросило исключение.
- */
 @DisplayName("Задание 11. Состояние после отказа")
 class Task11Test {
 
     @Test
     @DisplayName("Курс полон: код CH-2004, поля исключения и неизменное состояние")
     void failedEnrollmentChangesNothing() {
-        Course course = new Course(CourseCode.of("CS-101"), "Java", 40, 1, 1, CourseStatus.ACTIVE, null);
-        CourseCatalog catalog = new CourseCatalog();
+        Task00Course course = new Task00Course(Task10CourseCode.of("CS-101"), "Java", 40, 1, 1, Task13CourseStatus.ACTIVE, null);
+        Task07CourseCatalog catalog = new Task07CourseCatalog();
         catalog.add(course);
-        EnrollmentService service = new EnrollmentService(catalog);
-        service.addStudent(new Student("STU-42"));
+        Task07EnrollmentService service = new Task07EnrollmentService(catalog);
+        service.addStudent(new Task00Student("STU-42"));
 
-        EnrollmentRejectedException e = assertThrows(EnrollmentRejectedException.class,
+        Task03EnrollmentRejectedException e = assertThrows(Task03EnrollmentRejectedException.class,
                 () -> service.enroll("STU-42", course.code()));
 
         assertAll(
-                () -> assertEquals(RejectionReason.COURSE_FULL, e.reason()),
+                () -> assertEquals(Task03RejectionReason.COURSE_FULL, e.reason()),
                 () -> assertEquals("CH-2004", e.code()),
                 () -> assertEquals("STU-42", e.studentId()),
                 () -> assertEquals("CS-101", e.courseId()),
@@ -43,12 +37,12 @@ class Task11Test {
     @Test
     @DisplayName("completeHours сверх программы: точный тип и неизменный прогресс")
     void failedCompleteHoursKeepsProgress() {
-        Course course = new Course(CourseCode.of("CS-101"), "Java", 40, 30, 0, CourseStatus.ACTIVE, null);
+        Task00Course course = new Task00Course(Task10CourseCode.of("CS-101"), "Java", 40, 30, 0, Task13CourseStatus.ACTIVE, null);
 
-        ValidationException e = assertThrows(ValidationException.class, () -> course.completeHours(41));
+        Task02ValidationException e = assertThrows(Task02ValidationException.class, () -> course.completeHours(41));
 
         assertAll(
-                () -> assertEquals(ValidationException.class, e.getClass()),
+                () -> assertEquals(Task02ValidationException.class, e.getClass()),
                 () -> assertTrue(e.getMessage().contains("41")),
                 () -> assertEquals(0, course.completed(), "прогресс не изменился"),
                 () -> assertEquals(40, course.completeHours(40), "курс остался рабочим"));
@@ -56,21 +50,21 @@ class Task11Test {
 
     @Test
     @DisplayName("Отказ не портит сервис: следующий студент зачисляется")
-    void rejectionDoesNotPoisonTheService() throws EnrollmentRejectedException {
-        CourseCode math = CourseCode.of("MATH-101");
-        Course course = new Course(CourseCode.of("CS-202"), "Algorithms", 40, 30, 0, CourseStatus.ACTIVE, math);
-        CourseCatalog catalog = new CourseCatalog();
+    void rejectionDoesNotPoisonTheService() throws Task03EnrollmentRejectedException {
+        Task10CourseCode math = Task10CourseCode.of("MATH-101");
+        Task00Course course = new Task00Course(Task10CourseCode.of("CS-202"), "Algorithms", 40, 30, 0, Task13CourseStatus.ACTIVE, math);
+        Task07CourseCatalog catalog = new Task07CourseCatalog();
         catalog.add(course);
-        EnrollmentService service = new EnrollmentService(catalog);
-        service.addStudent(new Student("S-1"));
-        service.addStudent(new Student("S-2", math));
+        Task07EnrollmentService service = new Task07EnrollmentService(catalog);
+        service.addStudent(new Task00Student("S-1"));
+        service.addStudent(new Task00Student("S-2", math));
 
-        EnrollmentRejectedException e = assertThrows(EnrollmentRejectedException.class,
+        Task03EnrollmentRejectedException e = assertThrows(Task03EnrollmentRejectedException.class,
                 () -> service.enroll("S-1", course.code()));
-        Course enrolled = service.enroll("S-2", course.code());
+        Task00Course enrolled = service.enroll("S-2", course.code());
 
         assertAll(
-                () -> assertEquals(RejectionReason.PREREQUISITE_NOT_MET, e.reason()),
+                () -> assertEquals(Task03RejectionReason.PREREQUISITE_NOT_MET, e.reason()),
                 () -> assertEquals(1, course.enrolled()),
                 () -> assertEquals("CS-202", enrolled.code().value()));
     }

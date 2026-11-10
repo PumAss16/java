@@ -16,27 +16,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Задание 1. Разбор stack trace цепочки из четырёх методов:
- *
- * java.lang.NullPointerException: Cannot invoke "...Rec.name()" because "rec" is null
- *     at ...Task01Test$Report.name(...)      <- место возникновения (кадр 0)
- *     at ...Task01Test$Report.format(...)
- *     at ...Task01Test$Report.render(...)
- *     at ...Task01Test.reproduce(...)        <- вызывающий код
- *
- * Тип: NullPointerException. Причина — контракт Repo.find: null вместо отсутствия
- * значения, поэтому падает не только name(), а любой потребитель репозитория.
- * Исправление меняет контракт (Optional) и добавляет осмысленный отказ на входе
- * в сценарий, а не null-check в последней строке.
- */
 @DisplayName("Задание 1. Stack trace")
 class Task01Test {
 
     record Rec(String name, double avg) {
     }
 
-    /** Дефектный репозиторий: возвращает null. */
     static class Repo {
         private final Map<String, Rec> data = new HashMap<>();
 
@@ -69,7 +54,6 @@ class Task01Test {
         }
     }
 
-    /** Исправленный контракт: отсутствие значения выражено типом. */
     static class FixedRepo {
         private final Map<String, Rec> data = new HashMap<>();
 
@@ -95,7 +79,6 @@ class Task01Test {
         }
     }
 
-    /** Кадр 4 трассы — этот метод. */
     private NullPointerException reproduce(Report report) {
         try {
             report.render("S-404");

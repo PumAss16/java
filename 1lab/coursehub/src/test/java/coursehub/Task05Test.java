@@ -12,15 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * Задание 5. Try-with-resources: ресурс логирует open/use/close и закрывается
- * при успехе и при исключении. Если падают и работа, и close, основным остаётся
- * исключение из работы, а ошибка close попадает в getSuppressed().
- */
 @DisplayName("Задание 5. Try-with-resources и suppressed")
 class Task05Test {
 
-    /** Тестовый AutoCloseable: конструктор = open, use() и close() умеют падать. */
     static class Resource implements AutoCloseable {
 
         private final String name;

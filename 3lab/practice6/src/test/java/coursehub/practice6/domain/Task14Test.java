@@ -15,7 +15,7 @@ class Task14Test {
     private static final Currency EUR = Currency.getInstance("EUR");
 
     @Test
-    @DisplayName("Сложение и вычитание в одной валюте")
+    @DisplayName("Сложение и вычитание в оой валюте")
     void addsAndSubtracts() {
         Money first = eur("10.00");
         Money second = eur("2.50");

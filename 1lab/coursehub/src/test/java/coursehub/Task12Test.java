@@ -16,13 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Задание 12. Убраны четыре источника хрупкости:
- * 1) общее static-состояние        -> состояние создаётся в @BeforeEach и своё у каждого теста;
- * 2) зависимость от порядка         -> @TestMethodOrder(Random) и никаких следов между тестами;
- * 3) текущая директория             -> файлы только во временной папке @TempDir;
- * 4) полный текст toString          -> проверяются поля и значимые фрагменты.
- */
 @DisplayName("Задание 12. Нет хрупких тестов")
 @TestMethodOrder(MethodOrderer.Random.class)
 class Task12Test {
@@ -57,8 +50,8 @@ class Task12Test {
     @Test
     @DisplayName("toString проверяется структурно, а не целиком")
     void checksStructureNotWholeToString() {
-        EnrollmentRejectedException e =
-                new EnrollmentRejectedException("S-7", "CS-101", RejectionReason.COURSE_FULL);
+        Task03EnrollmentRejectedException e =
+                new Task03EnrollmentRejectedException("S-7", "CS-101", Task03RejectionReason.COURSE_FULL);
 
         assertAll(
                 () -> assertTrue(e.toString().contains("CS-101")),
@@ -70,8 +63,8 @@ class Task12Test {
     @Test
     @DisplayName("Значения сравниваются через equals, а не через toString")
     void comparesByEquals() {
-        CourseCode compact = CourseCode.of("cs101");
-        CourseCode canonical = CourseCode.of("CS-101");
+        Task10CourseCode compact = Task10CourseCode.of("cs101");
+        Task10CourseCode canonical = Task10CourseCode.of("CS-101");
 
         assertAll(
                 () -> assertEquals(canonical, compact),

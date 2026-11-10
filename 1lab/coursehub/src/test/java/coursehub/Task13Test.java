@@ -15,40 +15,28 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Задание 13. Таблица решений зачисления (статус курса, места, prerequisite,
- * повторная заявка). Правила по старшинству, остальные условия — don't care:
- *   R1 повторная заявка        -> ALREADY_ENROLLED     (CH-2006)
- *   R2 курс не ACTIVE          -> COURSE_NOT_ACTIVE    (CH-2003)
- *   R3 prerequisite не закрыт  -> PREREQUISITE_NOT_MET (CH-2005)
- *   R4 нет свободных мест      -> COURSE_FULL          (CH-2004)
- *   R5 иначе                   -> зачисление
- * 16 комбинаций четырёх условий дают 5 классов эквивалентности, поэтому
- * дублирующие кейсы удалены: их покрывают проверки don't care и сверка
- * со справочной моделью.
- */
 @DisplayName("Задание 13. Таблица решений")
 class Task13Test {
 
-    private static final CourseCode MATH = CourseCode.of("MATH-101");
+    private static final Task10CourseCode MATH = Task10CourseCode.of("MATH-101");
 
-    private final EnrollmentPolicy policy = new EnrollmentPolicy();
+    private final Task13EnrollmentPolicy policy = new Task13EnrollmentPolicy();
 
     static Stream<Arguments> rules() {
         return Stream.of(
-                Arguments.of("R1 повторная заявка", RejectionReason.ALREADY_ENROLLED, true, true, true, true),
-                Arguments.of("R2 курс не ACTIVE", RejectionReason.COURSE_NOT_ACTIVE, false, true, true, false),
-                Arguments.of("R3 нет prerequisite", RejectionReason.PREREQUISITE_NOT_MET, true, true, false, false),
-                Arguments.of("R4 нет свободных мест", RejectionReason.COURSE_FULL, true, false, true, false),
+                Arguments.of("R1 повторная заявка", Task03RejectionReason.ALREADY_ENROLLED, true, true, true, true),
+                Arguments.of("R2 курс не ACTIVE", Task03RejectionReason.COURSE_NOT_ACTIVE, false, true, true, false),
+                Arguments.of("R3 нет prerequisite", Task03RejectionReason.PREREQUISITE_NOT_MET, true, true, false, false),
+                Arguments.of("R4 нет свободных мест", Task03RejectionReason.COURSE_FULL, true, false, true, false),
                 Arguments.of("R5 всё благоприятно", null, true, true, true, false));
     }
 
     @ParameterizedTest(name = "{0} -> {1}")
     @MethodSource("rules")
     @DisplayName("По одному представителю на каждое правило")
-    void rulesAreCovered(String name, RejectionReason expected,
+    void rulesAreCovered(String name, Task03RejectionReason expected,
                          boolean active, boolean freeSeat, boolean prerequisite, boolean again) {
-        Optional<RejectionReason> refusal =
+        Optional<Task03RejectionReason> refusal =
                 policy.refusal(student(prerequisite), course(active, freeSeat), again);
 
         if (expected == null) {
@@ -61,7 +49,7 @@ class Task13Test {
     @Test
     @DisplayName("16 комбинаций дают 5 исходов: 11 дубликатов покрытия не добавляют")
     void combinationsCollapseToFiveOutcomes() {
-        Set<RejectionReason> outcomes = new HashSet<>();
+        Set<Task03RejectionReason> outcomes = new HashSet<>();
         for (boolean active : new boolean[]{true, false}) {
             for (boolean seat : new boolean[]{true, false}) {
                 for (boolean prerequisite : new boolean[]{true, false}) {
@@ -84,36 +72,35 @@ class Task13Test {
         for (boolean active : new boolean[]{true, false}) {
             for (boolean seat : new boolean[]{true, false}) {
                 for (boolean prerequisite : new boolean[]{true, false}) {
-                    assertEquals(Optional.of(RejectionReason.ALREADY_ENROLLED),
+                    assertEquals(Optional.of(Task03RejectionReason.ALREADY_ENROLLED),
                             policy.refusal(student(prerequisite), course(active, seat), true));
                 }
             }
         }
     }
 
-    /** Справочная модель: тот же порядок старшинства, что в политике. */
-    private static RejectionReason reference(boolean active, boolean seat, boolean prerequisite, boolean again) {
+    private static Task03RejectionReason reference(boolean active, boolean seat, boolean prerequisite, boolean again) {
         if (again) {
-            return RejectionReason.ALREADY_ENROLLED;
+            return Task03RejectionReason.ALREADY_ENROLLED;
         }
         if (!active) {
-            return RejectionReason.COURSE_NOT_ACTIVE;
+            return Task03RejectionReason.COURSE_NOT_ACTIVE;
         }
         if (!prerequisite) {
-            return RejectionReason.PREREQUISITE_NOT_MET;
+            return Task03RejectionReason.PREREQUISITE_NOT_MET;
         }
         if (!seat) {
-            return RejectionReason.COURSE_FULL;
+            return Task03RejectionReason.COURSE_FULL;
         }
         return null;
     }
 
-    private Student student(boolean prerequisite) {
-        return prerequisite ? new Student("S-1", MATH) : new Student("S-1");
+    private Task00Student student(boolean prerequisite) {
+        return prerequisite ? new Task00Student("S-1", MATH) : new Task00Student("S-1");
     }
 
-    private Course course(boolean active, boolean freeSeat) {
-        return new Course(CourseCode.of("CS-202"), "Algorithms", 40, 1, freeSeat ? 0 : 1,
-                active ? CourseStatus.ACTIVE : CourseStatus.ARCHIVED, MATH);
+    private Task00Course course(boolean active, boolean freeSeat) {
+        return new Task00Course(Task10CourseCode.of("CS-202"), "Algorithms", 40, 1, freeSeat ? 0 : 1,
+                active ? Task13CourseStatus.ACTIVE : Task13CourseStatus.ARCHIVED, MATH);
     }
 }

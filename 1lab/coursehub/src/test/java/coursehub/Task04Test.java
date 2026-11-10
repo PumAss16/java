@@ -11,13 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * Задание 4. Порядок try / catch / finally.
- * finally выполняется всегда и последним, но возвращать из него нельзя:
- * return обрывает метод, поэтому значение из try/catch теряется, а необработанное
- * исключение исчезает вовсе (suppressed при этом не создаётся — механизм подавления
- * есть только у try-with-resources).
- */
 @DisplayName("Задание 4. try-catch-finally")
 class Task04Test {
 
@@ -42,7 +35,7 @@ class Task04Test {
         }
     }
 
-    @SuppressWarnings("finally") // намеренно показываем вред return из finally
+    @SuppressWarnings("finally")
     private int returnFromFinally(List<String> log) {
         try {
             log.add("try");
@@ -53,7 +46,7 @@ class Task04Test {
         }
     }
 
-    @SuppressWarnings("finally") // return скрывает исключение — это и есть предмет задания
+    @SuppressWarnings("finally")
     private int finallyHidesException(List<String> log) {
         try {
             log.add("try");
@@ -64,7 +57,7 @@ class Task04Test {
         }
     }
 
-    @SuppressWarnings("finally") // throw из finally заменяет основное исключение
+    @SuppressWarnings("finally")
     private void throwFromFinally(List<String> log) {
         try {
             log.add("try");

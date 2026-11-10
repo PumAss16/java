@@ -13,18 +13,10 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Задание 14. Импортёр из абстрактного RecordReader с двумя отказами.
- * Malformed record -> checked CourseImportException с номером записи и cause.
- * Ошибка закрытия -> IOException в getSuppressed(), если основное уже есть,
- * либо InfrastructureException, если тело отработало успешно.
- * Частично опубликованного результата нет: список возвращается только при полном успехе.
- */
 @DisplayName("Задание 14. Импорт с двумя отказами")
 class Task14Test {
 
-    /** Тестовый источник: строки, счётчики и флаги отказов. */
-    static class FakeReader implements RecordReader {
+    static class FakeReader implements Task14RecordReader {
 
         private final List<String> lines;
         private final boolean failOnClose;
@@ -55,14 +47,14 @@ class Task14Test {
     private static final String GOOD = "CS-101;Java;30;40";
     private static final String BAD = "CS-102;Broken;30;oops";
 
-    private final CourseImporter importer = new CourseImporter();
+    private final Task06CourseImporter importer = new Task06CourseImporter();
 
     @Test
     @DisplayName("Успех: записи разобраны, читатель закрыт")
-    void success() throws CourseImportException {
+    void success() throws Task06CourseImportException {
         FakeReader reader = new FakeReader(false, GOOD, "MATH-101;Math;25;60");
 
-        List<Course> courses = importer.importAll(reader);
+        List<Task00Course> courses = importer.importAll(reader);
 
         assertAll(
                 () -> assertEquals(2, courses.size()),
@@ -77,7 +69,7 @@ class Task14Test {
     void malformedRecord() {
         FakeReader reader = new FakeReader(false, GOOD, BAD, "WEB-404;Web;20;30");
 
-        CourseImportException e = assertThrows(CourseImportException.class, () -> importer.importAll(reader));
+        Task06CourseImportException e = assertThrows(Task06CourseImportException.class, () -> importer.importAll(reader));
 
         assertAll(
                 () -> assertEquals(2, e.recordNumber()),
@@ -93,7 +85,7 @@ class Task14Test {
     void malformedRecordAndCloseFailure() {
         FakeReader reader = new FakeReader(true, GOOD, BAD);
 
-        CourseImportException e = assertThrows(CourseImportException.class, () -> importer.importAll(reader));
+        Task06CourseImportException e = assertThrows(Task06CourseImportException.class, () -> importer.importAll(reader));
 
         assertAll(
                 () -> assertEquals(2, e.recordNumber()),
@@ -109,7 +101,7 @@ class Task14Test {
     void closeFailureAfterSuccessfulParse() {
         FakeReader reader = new FakeReader(true, GOOD);
 
-        InfrastructureException e = assertThrows(InfrastructureException.class, () -> importer.importAll(reader));
+        Task15InfrastructureException e = assertThrows(Task15InfrastructureException.class, () -> importer.importAll(reader));
 
         assertAll(
                 () -> assertEquals("CH-4001", e.code()),
@@ -121,7 +113,7 @@ class Task14Test {
     @Test
     @DisplayName("Сбой чтения в середине потока: инфраструктурный отказ с числом записей")
     void readFailureKeepsCount() {
-        RecordReader broken = new RecordReader() {
+        Task14RecordReader broken = new Task14RecordReader() {
             private int reads;
 
             @Override
@@ -137,7 +129,7 @@ class Task14Test {
             }
         };
 
-        InfrastructureException e = assertThrows(InfrastructureException.class, () -> importer.importAll(broken));
+        Task15InfrastructureException e = assertThrows(Task15InfrastructureException.class, () -> importer.importAll(broken));
 
         assertAll(
                 () -> assertEquals("CH-4001", e.code()),

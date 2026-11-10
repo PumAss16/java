@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Задание 10. Параметризованные тесты CourseCode: display name показывает вход и ожидание. */
 @DisplayName("Задание 10. Нормализация кодов курса")
 class Task10Test {
 
@@ -24,7 +23,7 @@ class Task10Test {
             "'  java-202  ', JAVA-202"})
     @DisplayName("Допустимые коды нормализуются")
     void normalizesValidCodes(String raw, String expected) {
-        assertEquals(expected, CourseCode.of(raw).value());
+        assertEquals(expected, Task10CourseCode.of(raw).value());
     }
 
     @ParameterizedTest(name = "''{0}'' -> отказ ({1})")
@@ -40,7 +39,7 @@ class Task10Test {
             "CS/101, недопустимый разделитель"})
     @DisplayName("Недопустимые коды отвергаются")
     void rejectsInvalidCodes(String raw, String why) {
-        ValidationException e = assertThrows(ValidationException.class, () -> CourseCode.of(raw), why);
+        Task02ValidationException e = assertThrows(Task02ValidationException.class, () -> Task10CourseCode.of(raw), why);
 
         assertTrue(e.getMessage().startsWith("invalid course code"), why);
     }
@@ -48,16 +47,16 @@ class Task10Test {
     @Test
     @DisplayName("null — тоже неверный аргумент")
     void rejectsNull() {
-        assertThrows(ValidationException.class, () -> CourseCode.of(null));
+        assertThrows(Task02ValidationException.class, () -> Task10CourseCode.of(null));
     }
 
     @Test
     @DisplayName("Нормализация идемпотентна, equals — по значению")
     void normalizationIsIdempotent() {
-        CourseCode once = CourseCode.of("cs 101");
+        Task10CourseCode once = Task10CourseCode.of("cs 101");
 
         assertAll(
-                () -> assertEquals(once, CourseCode.of(once.value())),
+                () -> assertEquals(once, Task10CourseCode.of(once.value())),
                 () -> assertEquals("CS-101", once.toString()));
     }
 }

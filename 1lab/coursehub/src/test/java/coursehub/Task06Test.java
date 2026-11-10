@@ -9,22 +9,15 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Задание 6. Граница перевода исключения.
- * CourseParser (низкий уровень) бросает NumberFormatException без контекста;
- * CourseImporter (уровень импорта) добавляет номер записи и cause.
- * Ловятся только конкретные ожидаемые типы, поэтому баг парсера (null -> NPE)
- * не превращается в «плохую запись»: catch (Exception) не используется.
- */
 @DisplayName("Задание 6. NumberFormatException -> CourseImportException")
 class Task06Test {
 
-    private final CourseImporter importer = new CourseImporter();
+    private final Task06CourseImporter importer = new Task06CourseImporter();
 
     @Test
     @DisplayName("Корректная запись разбирается")
-    void parsesValidRecord() throws CourseImportException {
-        Course course = importer.parseCourse("cs_101;Java Basics;30;40", 1);
+    void parsesValidRecord() throws Task06CourseImportException {
+        Task00Course course = importer.parseCourse("cs_101;Java Basics;30;40", 1);
 
         assertAll(
                 () -> assertEquals("CS-101", course.code().value()),
@@ -36,7 +29,7 @@ class Task06Test {
     @Test
     @DisplayName("NumberFormatException переведена: номер записи 3 и cause сохранены")
     void translatesNumberFormatException() {
-        CourseImportException e = assertThrows(CourseImportException.class,
+        Task06CourseImportException e = assertThrows(Task06CourseImportException.class,
                 () -> importer.parseCourse("CS-101;Java;30;oops", 3));
 
         assertAll(
@@ -51,7 +44,7 @@ class Task06Test {
     @Test
     @DisplayName("Неверное число полей переводится так же")
     void translatesFieldCount() {
-        CourseImportException e = assertThrows(CourseImportException.class,
+        Task06CourseImportException e = assertThrows(Task06CourseImportException.class,
                 () -> importer.parseCourse("CS-101;Java", 7));
 
         assertAll(
@@ -62,10 +55,10 @@ class Task06Test {
     @Test
     @DisplayName("Недопустимые данные домена — тоже ожидаемый отказ")
     void translatesDomainValidation() {
-        CourseImportException e = assertThrows(CourseImportException.class,
+        Task06CourseImportException e = assertThrows(Task06CourseImportException.class,
                 () -> importer.parseCourse("!!!;Java;30;40", 1));
 
-        assertInstanceOf(ValidationException.class, e.getCause());
+        assertInstanceOf(Task02ValidationException.class, e.getCause());
     }
 
     @Test

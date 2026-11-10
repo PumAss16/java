@@ -20,27 +20,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-/**
- * Задание 2. Десять ситуаций и выбор класса отказа.
- *
- * checked   — наследник Exception, но не RuntimeException: компилятор требует решения
- *             (файл, сеть, импорт, прерывание);
- * unchecked — RuntimeException: неверный аргумент, нарушенное состояние, баг, ошибка конфигурации;
- * error     — Error (нет памяти): не восстанавливаем и не ловим;
- * value     — отказ выражается значением (Optional), а не исключением.
- */
 @DisplayName("Задание 2. Checked / unchecked / значение / Error")
 class Task02Test {
 
     static Stream<Arguments> situations() {
         return Stream.of(
-                Arguments.of("1 неверный аргумент метода", ValidationException.class, "unchecked"),
+                Arguments.of("1 неверный аргумент метода", Task02ValidationException.class, "unchecked"),
                 Arguments.of("2 отсутствующий файл", NoSuchFileException.class, "checked"),
                 Arguments.of("3 нарушение состояния", IllegalStateException.class, "unchecked"),
                 Arguments.of("4 сетевой отказ", ConnectException.class, "checked"),
                 Arguments.of("5 ошибка конфигурации", NumberFormatException.class, "unchecked"),
                 Arguments.of("6 недостаток памяти", OutOfMemoryError.class, "error"),
-                Arguments.of("7 некорректная запись импорта", CourseImportException.class, "checked"),
+                Arguments.of("7 некорректная запись импорта", Task06CourseImportException.class, "checked"),
                 Arguments.of("8 ничего не найдено при поиске", null, "value"),
                 Arguments.of("9 прерывание потока", InterruptedException.class, "checked"),
                 Arguments.of("10 непредвиденный баг", NullPointerException.class, "unchecked"));
@@ -102,7 +93,7 @@ class Task02Test {
     @Test
     @DisplayName("8. «Не найдено» — значение Optional.empty")
     void notFoundIsAValue() {
-        assertEquals(Optional.empty(), new CourseCatalog().findCourse(CourseCode.of("CS-101")));
+        assertEquals(Optional.empty(), new Task07CourseCatalog().findCourse(Task10CourseCode.of("CS-101")));
     }
 
     @Test
@@ -125,6 +116,6 @@ class Task02Test {
     @Test
     @DisplayName("1. Неверный аргумент — unchecked, ловить не нужно")
     void invalidArgumentIsUnchecked() {
-        assertThrows(ValidationException.class, () -> CourseCode.of("!!!"));
+        assertThrows(Task02ValidationException.class, () -> Task10CourseCode.of("!!!"));
     }
 }
