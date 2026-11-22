@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: coursehub.practice10.Task05Test
--------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.842 s -- in coursehub.practice10.Task05Test

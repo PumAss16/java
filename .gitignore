@@ -12,7 +12,7 @@
 *.tar.gz
 *.rar
 
-
+java_broken_backup/
 .vscode/
 .settings/
 .classpath
