@@ -1,0 +1,17 @@
+collections/Course.class
+collections/Result.class
+collections/CourseCode.class
+collections/CourseCodes.class
+collections/CourseIndex.class
+collections/DependencyGraph.class
+collections/LruCache.class
+collections/Generics.class
+collections/CourseId.class
+collections/Tag.class
+collections/TagIndex.class
+collections/DuplicateIdException.class
+collections/LruCache$LruMap.class
+collections/Waitlist.class
+collections/RegistrationLog.class
+collections/InMemoryRepository.class
+collections/Repository.class
